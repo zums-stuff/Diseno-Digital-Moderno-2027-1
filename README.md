@@ -20,6 +20,18 @@ repositorio.
 
 **Video explicativo:** https://youtu.be/Xfu8AbT2y00
 
+
+## Proyecto 1 - Elementos principales en la construcción de un sistema alambrado
+
+Construcción de un sistema digital alambrado básico únicamente con el uso de compuertas básicas, el cual
+debe contar con dos entradas, y solo cuando ambas entradas sean iguales se deberá encender
+una luz.
+
+**Video explciativo:** https://youtu.be/R66zv_TvAZE 
+
+## Proyecto 2 - Tablas de verdad
+
+
 ## Estructura
 
 ```
