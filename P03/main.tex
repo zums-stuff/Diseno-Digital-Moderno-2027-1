@@ -1,0 +1,146 @@
+% ══════════════════════════════════════════════
+% main.tex — Plantilla de Tarea UNAM FI
+% ══════════════════════════════════════════════
+% Compile:  latexmk -pdf main.tex
+% Clean:    latexmk -C
+% ══════════════════════════════════════════════
+
+\documentclass[a4paper,12pt]{article}
+
+\input{config}
+
+% ──────────────────────────────────────────────
+%  METADATA — Edit these for each assignment
+% ──────────────────────────────────────────────
+\newcommand{\materia}{Dise\~{n}o Digital Moderno}
+\newcommand{\tarea}{Proyecto 3}
+\newcommand{\grupo}{5}
+\newcommand{\semestre}{2027-1}
+\newcommand{\maestro}{Dr. Oscar Francisco Fuentes Casarrubias}
+
+\DeclareUnicodeCharacter{2212}{-}
+
+\hypersetup{
+  pdfauthor={Jafet Hernandez},
+  pdftitle={\materia - \tarea},
+  pdfsubject={\tarea - \materia},
+  pdflang={es}
+}
+
+% ──────────────────────────────────────────────
+%  DOCUMENT
+% ──────────────────────────────────────────────
+\begin{document}
+\thispagestyle{empty}
+\SetWatermarkText{}
+
+% ══════════════════════════════════════════════
+%  PORTADA
+% ══════════════════════════════════════════════
+
+% --- Barra lateral (logos y línea) ---
+\begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=north] (unam) at ([xshift=2.8cm, yshift=-2cm]current page.north west) {
+        \includegraphics[width=3.5cm]{img/UNAM.png}
+    };
+    \node[anchor=south] (fi) at ([xshift=2.8cm, yshift=2cm]current page.south west) {
+        \includegraphics[width=3.5cm]{img/FI.png}
+    };
+    \draw[double, double distance=12pt, line width=2.5pt]
+        ([yshift=-0.5cm]unam.south) -- ([yshift=0.5cm]fi.north);
+\end{tikzpicture}
+
+% --- Encabezado ---
+\begin{center}
+    \vspace{-40px}
+    \hspace*{0.5cm}
+    \begin{minipage}{\dimexpr\linewidth-0.5cm-3pt\relax}
+        \centering
+        \textbf{\large UNIVERSIDAD NACIONAL AUT\'{O}NOMA DE \\ M\'{E}XICO}\\[0.2cm]
+        \rule{\linewidth}{2pt} \\[0.5cm]
+        \vspace{-12px}
+        \textbf{\large FACULTAD DE INGENIER\'{I}A}\\[1.4cm]
+        \textbf{\large{\materia}}\\[1.5cm]
+    \end{minipage}
+\end{center}
+\vspace{10px}
+
+% --- Datos ---
+\noindent
+{\large\raggedright
+\textbf{Tarea:} \tarea\\[0.4cm]
+\textbf{Profesor:} \maestro\\[0.2cm]
+\textbf{Semestre:} \semestre\\[0.6cm]
+\textbf{Integrantes:} Duarte Puertas Manuel \\
+Hernandez Rosas Jafet Daniel \\
+Reyes Garcia Miguel Angel \\
+Torres Rodriguez Lizeth Danae\\[0.2cm]
+\textbf{Grupo:} \grupo\par
+}
+
+% ══════════════════════════════════════════════
+%  CONTENIDO
+% ══════════════════════════════════════════════
+\newpage
+\setcounter{page}{1}
+\newgeometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+% --- Encabezado (después de newgeometry) ---
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{15pt}
+\fancyhead[L]{\materia}
+\fancyhead[R]{\tarea}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% --- Reanudar marca de agua ---
+\SetWatermarkText{Universidad Nacional Aut\'{o}noma de M\'{e}xico, Facultad de Ingenier\'{i}a}
+
+\section{Introducci\'{o}n}
+Escribe aqu\'{i} la introducci\'{o}n de tu tarea.
+
+% ── Ejemplos de citas (eliminar en tu tarea real) ──
+% ╔══════════════════════════════════════════════════════════════╗
+% ║  GUIA DE CITAS RAPIDAS                                      ║
+% ║                                                              ║
+% ║  1. Cita basica (parentetica):                               ║
+% ║     \parencite{sitio_web_ejemplo}                            ║
+% ║     Resultado: (UNAM, 2024)                                  ║
+% ║                                                              ║
+% ║  2. Cita en texto:                                           ║
+% ║     \textcite{libro_ejemplo}                                 ║
+% ║     Resultado: Knuth (1997)                                  ║
+% ║                                                              ║
+% ║  3. Cita como nota al pie:                                   ║
+% ║     \footcite{articulo_ejemplo}                              ║
+% ║                                                              ║
+% ║  4. Citar varias fuentes a la vez:                           ║
+% ║     \parencite{clave1,clave2,clave3}                         ║
+% ║                                                              ║
+% ║  5. Incluir en Bibliografia sin citar en el texto:           ║
+% ║     \nocite{clave_bib}                                       ║
+% ╚══════════════════════════════════════════════════════════════╝
+
+\section{Desarrollo}
+Desarrolla el contenido principal de tu tarea aqu\'{i}.
+
+% ── Para incluir figuras ──
+% Coloca tus imagenes en la carpeta img/ y duplica este bloque.
+% Usa \ref{fig:etiqueta} en el texto para referenciarlas.
+%
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.75\textwidth]{img/nombre_imagen.png}
+%   \caption{Descripci\'{o}n de la figura.}
+%   \label{fig:etiqueta}
+% \end{figure}
+
+\section{Conclusiones}
+Escribe tus conclusiones aqu\'{i}.
+
+% ── Bibliograf\'{\i}a ──
+\newpage
+\printbibliography[title={Bibliograf\'{\i}a}]
+
+\end{document}

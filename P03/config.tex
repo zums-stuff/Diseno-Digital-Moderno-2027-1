@@ -1,0 +1,103 @@
+% ══════════════════════════════════════════════
+% config.tex — Configuración compartida
+% ══════════════════════════════════════════════
+
+\usepackage[utf8]{inputenc}
+% ── Idioma ──
+% Requiere texlive-langspanish (spanish.ldf + hyph-es.tex). Sin ese paquete
+% \usepackage[spanish,es-nodecimaldot]{babel} aborta con "Unknown option 'spanish'".
+% babel-espanol mete un espacio fino antes de '%' incluso en modo math, lo que rompe
+\usepackage[spanish,es-nodecimaldot]{babel}
+% babel-espanol mete un espacio fino antes de '%' incluso en modo
+% math, lo que rompe \,74\,\% con "Incompatible glue units".
+\spanishplainpercent
+\usepackage{csquotes}
+\usepackage[T1]{fontenc}
+\usepackage[left=6cm,right=1.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=blue]{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{wasysym}
+\usepackage{booktabs}
+\usepackage[version=4]{mhchem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage[export]{adjustbox}
+\usepackage{epigraph}
+\usepackage{tikz}
+% Imprescindible con babel español: los caracteres < y > se vuelven activos y
+% rompen la sintaxis de claves de TikZ (p. ej. ">=stealth"), provocando
+% "Argument of \language@active@arg> has an extra }".
+\usetikzlibrary{babel}
+\usepackage{helvet}
+\usepackage{mathptmx}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage{caption}
+\usepackage{mathtools}
+
+% ── Encabezados y pies de página ──
+\usepackage{fancyhdr}
+
+% ── Marca de agua vertical en el margen ──
+\usepackage{draftwatermark}
+\SetWatermarkColor{blue}
+\SetWatermarkAngle{90}
+\SetWatermarkFontSize{9pt}
+\SetWatermarkHorCenter{0.03\paperwidth}
+\SetWatermarkText{Universidad Nacional Aut\'{o}noma de M\'{e}xico, Facultad de Ingenier\'{i}a}
+
+% ── Bibliografía ──
+\usepackage[
+  backend=biber,
+  style=authoryear,
+  sorting=nyt,
+  maxcitenames=2,
+  uniquelist=false,
+  hyperref=true
+]{biblatex}
+\addbibresource{references.bib}
+
+% ── Unificar hipervínculos en citas (author+year en un solo link) ──
+\DeclareCiteCommand{\parencite}[\mkbibparens]
+  {\usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \printtext[bibhyperref]{\usebibmacro{cite}}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
+\DeclareCiteCommand{\textcite}
+  {\usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \printtext[bibhyperref]{\usebibmacro{textcite}}}
+  {\multicitedelim}
+  {\usebibmacro{textcite:postnote}}
+
+% ══════════════════════════════════════════════
+%  NOTAS DE COMPILACIÓN (leer antes de tocar)
+% ══════════════════════════════════════════════
+%
+% Dependencias del sistema (Arch):
+%   sudo pacman -S texlive-langspanish biber
+%
+% 1) Backend: se usa biber, NO bibtex. Con backend=bibtex, biblatex 3.21 emite
+%    "Using fall-back bibtex backend" en cada compilación y ese aviso no se
+%    puede silenciar desde el preámbulo. Migrado a biber el 2026-10-05.
+%
+% 2) biber NO está en /usr/bin en Arch: el paquete lo instala como
+%    /usr/bin/vendor_perl/biber. Si latexmk se queja de que no encuentra
+%    biber, exporta el path:
+%      export PATH="$PATH:/usr/bin/vendor_perl"
+%    (ya está añadido a ~/.bashrc).
+%
+% 3) latexmk detecta biber solo, así que el comando normal es:
+%      latexmk -pdf main.tex
+%    Con -bibtex también funciona, pero es innecesario y confuso: el flag
+%    venía de cuando el backend era bibtex y latexmk -pdf a secas NO lo
+%    ejecutaba, dejando las citas indefinidas sin avisar.
+%
+% 4) Tipos de entrada: usa @online para páginas web. @webpage no existe en
+%    biblatex y produce "No driver for 'webpage'" en cada compilación.
+%    Los .bib de la vault se migraron de @webpage a @online.

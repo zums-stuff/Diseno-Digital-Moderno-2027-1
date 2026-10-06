@@ -27,16 +27,28 @@ Construcción de un sistema digital alambrado básico únicamente con el uso de 
 debe contar con dos entradas, y solo cuando ambas entradas sean iguales se deberá encender
 una luz.
 
-**Video explciativo:** https://youtu.be/R66zv_TvAZE 
+**Video explicativo:** https://youtu.be/R66zv_TvAZE
 
 ## Proyecto 2 - Tablas de verdad
 
+**Video explicativo:** https://youtu.be/KSkfQ0wjZ-U
+
+Entregable en video: `P02/Video_Proyecto2.mp4`
 
 ## Estructura
 
 ```
 .
-├── Tarea1_SistemasNumericos.py            # Programa principal
-├── Tarea1_SistemasNumericos_Reporte.pdf   # Reporte en PDF
-└── Tarea1_LaTeX/                          # Fuentes LaTeX del reporte
+├── T01/                                     # Tarea 1 — Sistemas numéricos
+│   ├── Tarea1_SistemasNumericos.py          # Programa principal
+│   ├── Tarea1_SistemasNumericos_Reporte.pdf # Reporte en PDF
+│   ├── Tarea 1 Video.mp4                    # Video explicativo
+│   └── Tarea1_LaTeX/                        # Fuentes LaTeX del reporte
+├── P02/                                     # Proyecto 2 — Tablas de verdad
+│   └── Video_Proyecto2.mp4                  # Entregable en video
+└── P03/                                     # Proyecto 3
+    ├── main.tex                             # Fuentes LaTeX del reporte
+    ├── config.tex                           # Preámbulo compartido
+    ├── references.bib                       # Fuentes bibliográficas
+    └── img/                                 # Imágenes (UNAM.png, FI.png, ...)
 ```
