@@ -6,7 +6,7 @@
 % ── Idioma ──
 % Requiere texlive-langspanish (spanish.ldf + hyph-es.tex). Sin ese paquete
 % \usepackage[spanish,es-nodecimaldot]{babel} aborta con "Unknown option 'spanish'".
-% babel-espanol mete un espacio fino antes de '%' incluso en modo math, lo que rompe
+% es-nodecimaldot: sin esta opcion babel-espanol cambia 0.7856 por 0,7856
 \usepackage[spanish,es-nodecimaldot]{babel}
 % babel-espanol mete un espacio fino antes de '%' incluso en modo
 % math, lo que rompe \,74\,\% con "Incompatible glue units".
@@ -58,7 +58,7 @@
   uniquelist=false,
   hyperref=true
 ]{biblatex}
-\addbibresource{references.bib}
+\addbibresource{config/references.bib}
 
 % ── Unificar hipervínculos en citas (author+year en un solo link) ──
 \DeclareCiteCommand{\parencite}[\mkbibparens]
@@ -93,10 +93,20 @@
 %    (ya está añadido a ~/.bashrc).
 %
 % 3) latexmk detecta biber solo, así que el comando normal es:
-%      latexmk -pdf main.tex
+%      latexmk -pdf -auxdir=build main.tex
 %    Con -bibtex también funciona, pero es innecesario y confuso: el flag
 %    venía de cuando el backend era bibtex y latexmk -pdf a secas NO lo
 %    ejecutaba, dejando las citas indefinidas sin avisar.
+%
+%    -auxdir=build mete TODOS los artefactos (.aux .bbl .bcf .blg .log .fls
+%    .fdb_latexmk .out .run.xml) en build/ y deja main.pdf en el nivel
+%    superior. Por eso el grep de errores va contra build/main.log, no
+%    contra main.log:
+%      grep -cE '^!' build/main.log
+%    Ojo: -auxdir requiere latexmk >= 4.70 (aqui 4.87). Y si anades
+%    \input{config/config} en vez de \input{config}, y \addbibresource
+%    con ruta completa desde la raiz del proyecto, porque al estar el
+%    .bcf en build/ las rutas relativas se resuelven distinto.
 %
 % 4) Tipos de entrada: usa @online para páginas web. @webpage no existe en
 %    biblatex y produce "No driver for 'webpage'" en cada compilación.

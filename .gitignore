@@ -1,0 +1,45 @@
+# Artefactos de compilación LaTeX.
+#
+# El repo entrega fuentes + PDF final, no el estado interno de latexmk.
+# Sin esto, cada vez que se compila, el hook de auto-commit mete .log/.fls/
+# .bcf/... en el historial, que es ruido que nadie puede leer ni borrar.
+
+# Salida de pdflatex/xelatex/latexmk
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.idx
+*.ind
+*.ilg
+*.lof
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+
+# Logs (el .log del documento, no los .tex)
+*.log
+
+# Bibliografía intermedia generada por biblatex
+*-blx.bib
+
+# Carpeta de artefactos (latexmk -auxdir=build). Los patrones de arriba ya
+# cubren las extensiones conocidas; esta linea es la red de seguridad para
+# cualquier archivo imprevisto que latexmk deje ahi dentro.
+build/
+
+# NO ignorar nada de esto: son entregables
+!main.pdf
+!*.pdf
+
+# Sistema
+.DS_Store
+Thumbs.db
+__pycache__/

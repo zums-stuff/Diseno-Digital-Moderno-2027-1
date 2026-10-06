@@ -1,13 +1,22 @@
 % ══════════════════════════════════════════════
 % main.tex — Plantilla de Tarea UNAM FI
 % ══════════════════════════════════════════════
-% Compile:  latexmk -pdf main.tex
-% Clean:    latexmk -C
+% Compile:  latexmk -pdf -auxdir=build main.tex
+% Clean:    latexmk -C -auxdir=build
+% ══════════════════════════════════════════════
+%
+% Estructura de carpetas:
+%   main.tex           este archivo
+%   main.pdf           salida
+%   config/config.tex  preámbulo compartido (\input{config/config})
+%   config/references.bib
+%   images/            figuras y logos
+%   build/             artefactos de compilación (.aux .bbl .bcf .log ...)
 % ══════════════════════════════════════════════
 
 \documentclass[a4paper,12pt]{article}
 
-\input{config}
+\input{config/config}
 
 % ──────────────────────────────────────────────
 %  METADATA — Edit these for each assignment
@@ -41,10 +50,10 @@
 % --- Barra lateral (logos y línea) ---
 \begin{tikzpicture}[remember picture, overlay]
     \node[anchor=north] (unam) at ([xshift=2.8cm, yshift=-2cm]current page.north west) {
-        \includegraphics[width=3.5cm]{img/UNAM.png}
+        \includegraphics[width=3.5cm]{images/UNAM.png}
     };
     \node[anchor=south] (fi) at ([xshift=2.8cm, yshift=2cm]current page.south west) {
-        \includegraphics[width=3.5cm]{img/FI.png}
+        \includegraphics[width=3.5cm]{images/FI.png}
     };
     \draw[double, double distance=12pt, line width=2.5pt]
         ([yshift=-0.5cm]unam.south) -- ([yshift=0.5cm]fi.north);
@@ -98,49 +107,73 @@ Torres Rodriguez Lizeth Danae\\[0.2cm]
 \SetWatermarkText{Universidad Nacional Aut\'{o}noma de M\'{e}xico, Facultad de Ingenier\'{i}a}
 
 \section{Introducci\'{o}n}
-Escribe aqu\'{i} la introducci\'{o}n de tu tarea.
+En este proyecto se abordó el diseño e implementación de un sistema de seguridad con 9 puntos de supervisión utilizando circuitos de mediana escala de integración (MSI). El objetivo principal fue comprender el funcionamiento práctico y la interconexión de codificadores con prioridad y decodificadores BCD a 7 segmentos. 
 
-% ── Ejemplos de citas (eliminar en tu tarea real) ──
-% ╔══════════════════════════════════════════════════════════════╗
-% ║  GUIA DE CITAS RAPIDAS                                      ║
-% ║                                                              ║
-% ║  1. Cita basica (parentetica):                               ║
-% ║     \parencite{sitio_web_ejemplo}                            ║
-% ║     Resultado: (UNAM, 2024)                                  ║
-% ║                                                              ║
-% ║  2. Cita en texto:                                           ║
-% ║     \textcite{libro_ejemplo}                                 ║
-% ║     Resultado: Knuth (1997)                                  ║
-% ║                                                              ║
-% ║  3. Cita como nota al pie:                                   ║
-% ║     \footcite{articulo_ejemplo}                              ║
-% ║                                                              ║
-% ║  4. Citar varias fuentes a la vez:                           ║
-% ║     \parencite{clave1,clave2,clave3}                         ║
-% ║                                                              ║
-% ║  5. Incluir en Bibliografia sin citar en el texto:           ║
-% ║     \nocite{clave_bib}                                       ║
-% ╚══════════════════════════════════════════════════════════════╝
+Para lograr la visualización, es necesario entender la estructura interna de los displays de 7 segmentos (Figura \ref{fig:displays_tipos}) y la manera en la que el decodificador maneja cada una de sus terminales a través de resistencias limitadoras (Figura \ref{fig:displays_conexion}).
+
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=0.4\textwidth]{images/image_3f3120.png}
+   \caption{Configuración interna de los displays de 7 segmentos de ánodo y cátodo común.}
+   \label{fig:displays_tipos}
+\end{figure}
+
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=0.5\textwidth]{images/image_3f313e.png}
+   \caption{Interconexión típica entre un decodificador BCD y un display de 7 segmentos.}
+   \label{fig:displays_conexion}
+\end{figure}
 
 \section{Desarrollo}
-Desarrolla el contenido principal de tu tarea aqu\'{i}.
+El sistema fue diseñado para identificar de forma visual cuál de los 9 puntos de supervisión detecta una intrusión. La arquitectura general (Figura \ref{fig:diagrama_interconexion}) dicta que las señales lógicas de entrada se conecten a un codificador con prioridad (74147). Este integrado transforma la señal activa de mayor jerarquía en un código binario BCD invertido. Dependiendo de los integrados, las salidas pueden requerir una etapa de lógica de inversión antes de ingresar al decodificador (7447 o 7448), el cual finalmente enciende los leds correspondientes en el display.
 
-% ── Para incluir figuras ──
-% Coloca tus imagenes en la carpeta img/ y duplica este bloque.
-% Usa \ref{fig:etiqueta} en el texto para referenciarlas.
-%
-% \begin{figure}[H]
-%   \centering
-%   \includegraphics[width=0.75\textwidth]{img/nombre_imagen.png}
-%   \caption{Descripci\'{o}n de la figura.}
-%   \label{fig:etiqueta}
-% \end{figure}
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=0.5\textwidth]{images/image_3f3159.png}
+   \caption{Diagrama lógico de interconexiones del sistema de supervisión.}
+   \label{fig:diagrama_interconexion}
+\end{figure}
 
-\section{Conclusiones}
-Escribe tus conclusiones aqu\'{i}.
+Durante la etapa de implementación física se montaron los módulos de pares infrarrojos (fototransmisores y receptores) previstos en el diagrama de la Figura \ref{fig:diagrama_interconexion}. Estos sí se instalaron sobre la protoboard, sin embargo su respuesta resultó poco sensible e irregular frente a la distancia y a las condiciones de iluminación del entorno, por lo que no permitían distinguir de forma confiable un evento de censado. 
 
-% ── Bibliograf\'{\i}a ──
-\newpage
-\printbibliography[title={Bibliograf\'{\i}a}]
+Ante esta limitación, y con el fin de verificar de forma aislada la funcionalidad estricta de la lógica digital del sistema, se procedió a excitar las entradas del codificador mediante un dipswitch. De este modo fue posible inyectar directamente los niveles lógicos deseados en el 74147 y observar, sin la interferencia del transductor, la respuesta de la cadena completa: codificación con prioridad, inversión de las salidas y decodificado en el display de 7 segmentos.
+
+Las fotografías siguientes documentan el mismo montaje con distintas combinaciones del dipswitch y la respuesta obtenida en el display.
+
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=0.42\textwidth]{images/protoboard_1.png}
+   \caption{Dipswitch en reposo, sin ninguna entrada activada: el display muestra el dígito 0.}
+   \label{fig:pb_0}
+\end{figure}
+
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=0.42\textwidth]{images/protoboard_2.png}
+   \caption{Primera entrada del dipswitch activada: el display muestra el dígito 9, de acuerdo con la jerarquía del codificador con prioridad.}
+   \label{fig:pb_9}
+\end{figure}
+
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=0.42\textwidth]{images/protoboard_3.png}
+   \caption{Segunda entrada del dipswitch activada: el display muestra el dígito 1.}
+   \label{fig:pb_1}
+\end{figure}
+
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=0.42\textwidth]{images/protoboard_4.png}
+   \caption{Tercera entrada del dipswitch activada: el display muestra el dígito 2.}
+   \label{fig:pb_2}
+\end{figure}
+
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=0.42\textwidth]{images/protoboard_5.png}
+   \caption{Cuarta entrada del dipswitch activada: el display muestra el dígito 3.}
+   \label{fig:pb_3}
+\end{figure}
 
 \end{document}
