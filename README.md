@@ -35,20 +35,45 @@ una luz.
 
 Entregable en video: `P02/Video_Proyecto2.mp4`
 
+## Proyecto 3 - Sistema de supervisión con circuitos MSI
+
+Sistema de seguridad con 9 puntos de supervisión, implementado con circuitos de
+mediana escala de integración: un codificador con prioridad 74147, una etapa de
+inversión de sus salidas y un decodificador BCD a 7 segmentos (7447/7448) que
+muestra en el display el número del punto que detecta una intrusión.
+
+Las entradas se implementaron con módulos de pares infrarrojos, cuya respuesta
+resultó poco sensible frente a la distancia y a la iluminación del entorno. Por
+eso la verificación de la lógica combinacional se hizo excitando las entradas del
+codificador con un dipswitch, lo que permitió comprobar de forma aislada la cadena
+completa: codificación con prioridad, inversión y decodificado. El reporte
+documenta cinco combinaciones del dipswitch y el dígito resultante en el display.
+
+Reporte en PDF: `P03/Reporte_Proyecto3.pdf`
+
 ## Estructura
 
 ```
 .
+├── .gitignore                               # Excluye artefactos de compilación
 ├── T01/                                     # Tarea 1 — Sistemas numéricos
-│   ├── Tarea1_SistemasNumericos.py          # Programa principal
+│   ├── Tarea1_SistemasNumericos.py          # Copia del programa (idéntica a tarea1.py)
 │   ├── Tarea1_SistemasNumericos_Reporte.pdf # Reporte en PDF
 │   ├── Tarea 1 Video.mp4                    # Video explicativo
 │   └── Tarea1_LaTeX/                        # Fuentes LaTeX del reporte
+│       ├── main.tex
+│       ├── config.tex
+│       ├── tarea1.py                        # Programa principal (el que cita el reporte)
+│       └── img/
+│           └── ejecucion/                   # Capturas de las 12 pruebas del programa
 ├── P02/                                     # Proyecto 2 — Tablas de verdad
 │   └── Video_Proyecto2.mp4                  # Entregable en video
 └── P03/                                     # Proyecto 3
     ├── main.tex                             # Fuentes LaTeX del reporte
-    ├── config.tex                           # Preámbulo compartido
-    ├── references.bib                       # Fuentes bibliográficas
-    └── img/                                 # Imágenes (UNAM.png, FI.png, ...)
+    ├── Reporte_Proyecto3.pdf                # Reporte en PDF (entregable)
+    ├── config/
+    │   ├── config.tex                       # Preámbulo compartido
+    │   └── references.bib                   # Fuentes bibliográficas
+    ├── images/                              # Logos y figuras del reporte
+    └── build/                               # Artefactos de compilación, no se versionan
 ```
