@@ -1,0 +1,213 @@
+% ══════════════════════════════════════════════════════════════════════════
+% Especificaciones/main.tex — Hoja de especificaciones (1 p\'{a}gina)
+% ══════════════════════════════════════════════════════════════════════════
+% Compile:  latexmk -pdf -auxdir=build main.tex
+% Renombrar a Especificaciones_PP1.pdf
+% ══════════════════════════════════════════════════════════════════════════
+
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\spanishplainpercent
+\usepackage[margin=1.4cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{babel,arrows.meta}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multicol}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue}
+
+\newcommand{\materia}{Dise\~{n}o Digital Moderno}
+\newcommand{\semestre}{2027-1}
+\newcommand{\grupo}{5}
+\newcommand{\maestro}{Dr. Oscar Francisco Fuentes Casarrubias}
+
+\hypersetup{
+  pdfauthor={Hernandez Rosas Jafet Daniel},
+  pdftitle={Hoja de Especificaciones - PP1},
+  pdflang={es}
+}
+
+\begin{document}
+\pagestyle{empty}
+
+% ── Encabezado ──
+\noindent
+\begin{minipage}{0.13\textwidth}
+  \includegraphics[width=2.2cm]{../images/UNAM.png}\\
+  \includegraphics[width=2.2cm]{../images/FI.png}
+\end{minipage}%
+\begin{minipage}{0.86\textwidth}
+  {\small\textbf{UNIVERSIDAD NACIONAL AUT\'{O}NOMA DE M\'{E}XICO}}\\
+  {\small\textbf{Facultad de Ingenier\'{i}a \quad -- \quad \materia}}\\[1pt]
+  {\small Semestre \semestre{, Grupo \grupo, Profesor: }\maestro.}\\[2pt]
+  {\large\textbf{Hoja de especificaciones -- Proyecto Parcial 1 (ALU\_2b v1)}}\\
+  {\small Integrantes: Duarte Puertas Manuel; Hernandez Rosas Jafet Daniel;
+                Reyes Garc\'{i}a Miguel Angel; Torres Rodriguez Lizeth Danae.}
+\end{minipage}
+
+\vspace{2pt}
+\hrule height 1pt
+\vspace{4pt}
+
+% ── Diagrama de bloques y tabla de entradas/salidas lado a lado ──
+\noindent
+\begin{minipage}[t]{0.55\textwidth}
+  \textbf{Diagrama de bloques.}
+  \vspace{2pt}
+  \begin{center}
+  \begin{tikzpicture}[
+      every node/.style={font=\tiny},
+      blk/.style={draw, rounded corners, fill=blue!5,
+                  minimum width=2.4cm, minimum height=0.7cm,
+                  align=center, font=\scriptsize},
+      arr/.style={-{Latex[length=1.4mm]}, thick},
+      lbl/.style={font=\tiny, fill=white, inner sep=1pt,
+                  fill opacity=0.85, text opacity=1}
+  ]
+  % Coordenadas de bloques:
+  %   in:  (0, 4.5),  min w 2.4 -> west=-1.2, east= 1.2.
+  %   sel: (3, 4.5),  min w 2.4 -> west= 1.8, east= 4.2.
+  %   ops: (0, 3.0),  min w 6.4 -> west=-3.2, east= 3.2.
+  %   mux: (-1, 1.5), min w 2.4 -> west=-2.2, east= 0.2.
+  %   dec: (2, 1.5),  min w 2.4 -> west= 0.8,  east= 3.2.
+  %   drv: (-1, 0.0), min w 2.4 -> west=-2.2, east= 0.2.
+  %   dsp: (2, 0.0),  min w 2.4 -> west= 0.8,  east= 3.2.
+
+  \node[blk] (in)  at (0, 4.5) {DIP A/B\\\tiny + pull-down};
+  \node[blk] (sel) at (3, 4.5) {DIP S/EN\\\tiny + pull-down};
+  \node[blk, minimum width=6.4cm] (ops) at (1, 3.0)
+       {Operaciones\\\scriptsize SUM, XOR, AND, MAX};
+  \node[blk] (mux) at (-1, 1.5) {MUX\\\scriptsize 74LS153};
+  \node[blk] (dec) at (2, 1.5) {Decoder\\\scriptsize 74LS139};
+  \node[blk] (drv) at (-1, 0.0) {Driver\\\scriptsize 74LS47};
+  \node[blk] (dsp) at (2, 0.0) {Display 7-seg\\\scriptsize \'{a}nodo com.};
+
+  % in (este x=1.2, y=4.5) -> ops (oeste x=-2.2, y=3.0+0.35=3.35 norte).
+  %   Bajamos desde DIP, luego horizontal al oeste de ops, luego bajamos.
+  \draw[thick] (1.2, 4.5) -- (1.2, 3.6);             % bajar
+  \draw[thick] (1.2, 3.6) -- (-2.2, 3.6);           % horizontal a oeste de ops
+  \draw[arr]  (-2.2, 3.6) -- (-2.2, 3.35);          % bajar al norte de ops
+  \node[lbl, anchor=south, font=\tiny] at (-0.5, 3.7) {$A,B$};
+
+  % ops (este x=4.2, y=3.0) -> mux (oeste x=-2.2, y=1.5+0.35=1.85 norte).
+  \draw[thick] (4.2, 2.65) -- (4.2, 2.2);            % bajar vertical desde ops este
+  \draw[thick] (4.2, 2.2) -- (-2.2, 2.2);           % horizontal
+  \draw[arr]  (-2.2, 2.2) -- (-2.2, 1.85);          % bajar al norte del mux
+  \node[lbl, anchor=south, font=\tiny] at (1.5, 2.3) {$\Sigma,X,N,M$};
+
+  % sel -> dec: bajar y luego horizontal al norte del dec.
+  \draw[thick] (3.0, 4.15) -- (3.0, 2.2);            % bajar del DIP
+  \draw[thick] (3.0, 2.2) -- (2.0, 2.2);             % horizontal al este del dec
+  \draw[arr]  (2.0, 2.2) -- (2.0, 1.85);             % bajar al norte del dec
+  \node[lbl, anchor=south, font=\tiny] at (2.7, 2.3) {$S_1,S_0$};
+
+  % mux -> drv (vertical)
+  \draw[arr] (-1.0, 1.15) -- (-1.0, 0.35);            % bajar al norte del drv
+  \node[lbl, anchor=east, font=\tiny] at (-1.1, 0.7) {$R_i$};
+
+  % drv -> dsp (horizontal)
+  \draw[arr] (0.2, 0.0) -- (0.8, 0.0);
+
+  % decoder -> 4 LEDs (texto pequeño a la derecha)
+  \node[anchor=west, font=\tiny] at (3.3, 1.7) {4 LEDs};
+
+  \end{tikzpicture}
+  \end{center}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.43\textwidth}
+  \textbf{Entradas y salidas.}
+  \vspace{2pt}
+  \footnotesize
+  \begin{tabularx}{\linewidth}{l X}
+    \toprule
+    \textbf{Se\~{n}al} & \textbf{Descripci\'{o}n}\\
+    \midrule
+    $A_1,A_0$ & Operando A (2 bits, DIP SW1).\\
+    $B_1,B_0$ & Operando B (2 bits, DIP SW1).\\
+    $S_1,S_0$ & Selecci\'{o}n de operaci\'{o}n (DIP SW2).\\
+    EN        & Habilitaci\'{o}n. \texttt{EN=1} opera; \texttt{EN=0} muestra 0 y apaga LEDs.\\
+    $R_2,R_1,R_0$ & Resultado de operaci\'{o}n $\in \{0,\dots,6\}$.\\
+    Display   & Glifo del resultado (driver 74LS47).\\
+    LED 0--3  & Indican la operaci\'{o}n activa (cableado: MAX, AND, XOR, SUM).\\
+    \bottomrule
+  \end{tabularx}
+
+  \vspace{4pt}
+  \textbf{Mapeo \texttt{S1S0}.}
+  \vspace{2pt}
+  \begin{tabular}{cc|l}
+    \toprule
+    $S_1S_0$ & Operaci\'{o}n & LED\\
+    \midrule
+    00 & MAX & LED0\\
+    01 & AND & LED1\\
+    10 & XOR & LED2\\
+    11 & SUM & LED3\\
+    \bottomrule
+  \end{tabular}
+\end{minipage}
+
+\vspace{4pt}
+
+% ── Lista de CIs y caracter\'{i}sticas ──
+\noindent
+\begin{minipage}[t]{0.62\textwidth}
+  \textbf{Lista de CIs y componentes principales.}
+  \vspace{2pt}
+  \footnotesize
+  \begin{tabularx}{\linewidth}{lX}
+    \toprule
+    \textbf{CI / ref.}  & \textbf{Funci\'{o}n y conexi\'{o}n esencial}\\
+    \midrule
+    74LS283 & Sumador binario; $C_\text{in}\!\to\!\mathrm{GND}$, $\Sigma_0{=}1$, $\Sigma_1{=}4$, $\Sigma_2{=}13$.\\
+    74LS86  & XOR: pines 1--3 ($A_0,B_0\!\to\!X_0$); 4--6 ($A_1,B_1\!\to\!X_1$).\\
+    74LS08  & AND: pines 1--3 ($A_0,B_0\!\to\!N_0$); 4--6 ($A_1,B_1\!\to\!N_1$).\\
+    74LS85  & Comparador; $A$ en 10/12, $B$ en 9/11; cascada a GND/VCC; $A > B$ en pin 5.\\
+    74LS157 & MUX 2-a-1; select com\'{u}n a ($A > B \lor A = B$). Salidas en 4 y 7.\\
+    74LS04  & Inversor; pin 1 a EN, pin 2 entrega $\overline{\mathrm{EN}}$.\\
+    74LS139 & Decoder; $\overline{Y_i}$ en 4--7; $\overline{G}$ en 1.\\
+    74LS153 & MUX 4-a-1; entradas 1C0..1C3 en pines 3--6; $1Y$ en 7.\\
+    74LS47  & Driver BCD $\to$ 7 segmentos; entradas BCD en 7,1,2,6.\\
+    Display & 7-segmentos, \'{a}nodo com\'{u}n. \'{A}nodos (3, 8) a $+5\,\mathrm{V}$.\\
+    \bottomrule
+  \end{tabularx}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.36\textwidth}
+  \textbf{Alimentaci\'{o}n y operaci\'{o}n.}
+  \vspace{2pt}
+  \footnotesize
+  \begin{tabularx}{\linewidth}{l X}
+    \toprule
+    $V_\text{CC}$  & $+5\,\mathrm{V}$ regulados.\\
+    Tierra         & Com\'{u}n, una sola referencia.\\
+    Desacoplo      & $100\,\mathrm{nF}$ en cada CI.\\
+    Pull-downs     & $10\,\mathrm{k}\Omega$ en las siete entradas de DIP.\\
+    LED series     & $470\,\Omega$ por LED.\\
+    Display series & $330\,\Omega$ por segmento.\\
+    \bottomrule
+  \end{tabularx}
+
+  \vspace{6pt}
+  \textbf{Comportamiento de ENABLE.}
+  \vspace{2pt}
+  \begin{tabularx}{\linewidth}{l X}
+    \toprule
+    EN & Acci\'{o}n\\
+    \midrule
+    1 & Salida normal; un LED activo; display muestra el resultado.\\
+    0 & MUX pone $R=0$; decoder en alto. Display = 0; sin LEDs.\\
+    \bottomrule
+  \end{tabularx}
+
+\end{minipage}
+
+\end{document}

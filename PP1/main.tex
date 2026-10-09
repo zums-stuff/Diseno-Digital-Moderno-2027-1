@@ -1,0 +1,910 @@
+% ══════════════════════════════════════════════════════════════════════════
+% main.tex — Reporte del Proyecto Parcial 1
+% Unidad combinacional de 2 bits (MUX, decoder, display de 7 segmentos)
+% ══════════════════════════════════════════════════════════════════════════
+% Compile:  latexmk -pdf -auxdir=build main.tex
+% ══════════════════════════════════════════════════════════════════════════
+
+\documentclass[a4paper,12pt]{article}
+
+\input{config/config}
+
+% ──────────────────────────────────────────────────────────────────────
+%  METADATA
+% ──────────────────────────────────────────────────────────────────────
+\newcommand{\materia}{Dise\~{n}o Digital Moderno}
+\newcommand{\tarea}{Proyecto Parcial 1: Unidad combinacional de 2 bits con MUX, decoder y display de 7 segmentos}
+\newcommand{\grupo}{5}
+\newcommand{\semestre}{2027-1}
+\newcommand{\maestro}{Dr. Oscar Francisco Fuentes Casarrubias}
+\newcommand{\fechaentrega}{29 de octubre de 2026}
+
+\DeclareUnicodeCharacter{2212}{-}
+
+\hypersetup{
+  pdfauthor={Hernandez Rosas Jafet Daniel},
+  pdftitle={\materia - \tarea},
+  pdflang={es}
+}
+
+\emergencystretch=2em
+
+% ──────────────────────────────────────────────────────────────────────
+%  DOCUMENT
+% ──────────────────────────────────────────────────────────────────────
+\begin{document}
+\thispagestyle{empty}
+\SetWatermarkText{}
+
+% ══════════════════════════════════════════════════════════════════════
+%  PORTADA
+% ══════════════════════════════════════════════════════════════════════
+
+\begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=north] (unam) at ([xshift=2.8cm, yshift=-2cm]current page.north west) {
+        \includegraphics[width=3.5cm]{images/UNAM.png}
+    };
+    \node[anchor=south] (fi) at ([xshift=2.8cm, yshift=2cm]current page.south west) {
+        \includegraphics[width=3.5cm]{images/FI.png}
+    };
+    \draw[double, double distance=12pt, line width=2.5pt]
+        ([yshift=-0.5cm]unam.south) -- ([yshift=0.5cm]fi.north);
+\end{tikzpicture}
+
+\begin{center}
+    \vspace{-40px}
+    \hspace*{0.5cm}
+    \begin{minipage}{\dimexpr\linewidth-0.5cm-3pt\relax}
+        \centering
+        \textbf{\large UNIVERSIDAD NACIONAL AUT\'{O}NOMA DE \\ M\'{E}XICO}\\[0.2cm]
+        \rule{\linewidth}{2pt} \\[0.5cm]
+        \vspace{-12px}
+        \textbf{\large FACULTAD DE INGENIER\'{I}A}\\[1.4cm]
+        \textbf{\large{\materia}}\\[1.5cm]
+    \end{minipage}
+\end{center}
+\vspace{10px}
+
+\noindent
+{\large\raggedright
+\textbf{Tarea:} \tarea\\[0.4cm]
+\textbf{Profesor:} \maestro\\[0.2cm]
+\textbf{Semestre:} \semestre\\[0.6cm]
+\textbf{Integrantes:} Duarte Puertas Manuel \\
+Hernandez Rosas Jafet Daniel \\
+Reyes Garc\'{i}a Miguel Angel \\
+Torres Rodriguez Lizeth Danae\\[0.2cm]
+\textbf{Grupo:} \grupo\\[0.2cm]
+\textbf{Fecha de entrega:} \fechaentrega\par
+}
+
+% ══════════════════════════════════════════════════════════════════════
+%  CONTENIDO
+% ══════════════════════════════════════════════════════════════════════
+\newpage
+\setcounter{page}{1}
+\newgeometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{15pt}
+\fancyhead[L]{\materia}
+\fancyhead[R]{Proyecto Parcial 1}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\SetWatermarkText{Universidad Nacional Aut\'{o}noma de M\'{e}xico, Facultad de Ingenier\'{i}a}
+
+% ─────────────────────────────────────────────────────────────────────
+\section{Introducci\'{o}n}
+En este reporte se documenta el dise\~{n}o, montaje y verificaci\'{o}n
+de una unidad aritm\'{e}tico-l\'{o}gica m\'{i}nima de dos bits, construida
+\'{u}nicamente con circuitos integrados discretos de la familia TTL LS.
+El sistema recibe dos operandos \texttt{A = A1A0} y \texttt{B = B1B0}
+de dos bits, una se\~{n}al de selecci\'{o}n \texttt{S = S1S0} y una
+se\~{n}al de habilitaci\'{o}n \texttt{ENABLE}, y produce un resultado
+en el rango $\{0,1,\ldots,6\}$ que se visualiza en un display de
+\'{a}nodo com\'{u}n de siete segmentos.
+
+Las cuatro operaciones implementadas son \texttt{SUM} (suma binaria sin
+signo), \texttt{XOR} y \texttt{AND} bit a bit, y \texttt{MAX} (mayor
+entre \texttt{A} y \texttt{B}). La selecci\'{o}n se hace con un
+multiplexor 74LS153, mientras que un decoder 74LS139 activa un LED
+indicador de la operaci\'{o}n seleccionada. El resultado final pasa
+por un driver BCD a 7 segmentos 74LS47.
+
+% ─────────────────────────────────────────────────────────────────────
+\section{Objetivo}
+Dise\~{n}ar, cablear y verificar una unidad l\'{o}gica combinacional de
+dos bits que, a partir de dos operandos \texttt{A} y \texttt{B}, una
+selecci\'{o}n \texttt{S} y una habilitaci\'{o}n \texttt{ENABLE},
+entregue el resultado de la operaci\'{o}n elegida en un display de
+siete segmentos, usando exclusivamente compuertas, multiplexores,
+decoders y drivers TTL.
+
+% ─────────────────────────────────────────────────────────────────────
+\section{Arquitectura general}
+El sistema se parti\'{o} en dos protoboards de 830 puntos seg\'{u}n la
+distribuci\'{o}n f\'{i}sica de la Figura~\ref{fig:topologia}. La
+\textit{Placa 1} contiene las entradas y los bloques que calculan las
+cuatro operaciones. La \textit{Placa 2} contiene la etapa de
+selecci\'{o}n (MUX), el decoder, los LEDs indicadores, el driver BCD y
+el display.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    every node/.style={font=\small},
+    blk/.style  ={draw, rounded corners, align=center, fill=blue!5,
+                  minimum width=2.6cm, minimum height=1.0cm},
+    sw/.style   ={draw, fill=yellow!15, align=center, minimum width=1.6cm,
+                  minimum height=0.5cm, font=\scriptsize},
+    led/.style  ={circle, draw, minimum size=0.4cm, fill=red!10, inner sep=0pt},
+    arr/.style  ={->, thick},
+    lbl/.style  ={font=\scriptsize, fill=white, inner sep=1pt,
+                  fill opacity=0.85, text opacity=1}
+]
+
+%==========================================================================
+% Bloques. Coordenadas explcitas; cada bloque usa minimum width = X cm.
+% X de borde izquierdo = center.x - X/2, X de borde derecho = center.x + X/2.
+%
+% sw1, sw2:      center (0.8, 4.5) y (0.8, 2.5).  min width 1.6 -> bordes en x=0 y 1.6.
+% ops:           center (4.5, 3.5).                min width 2.6 -> bordes 3.2 y 5.8.
+% mux, dec, drv: center x = 8.5.                   min width 2.6 -> bordes 7.2 y 9.8.
+%                 y = 4.5, 2.5, 0.5.
+% dsp:           center (12.0, 0.5).              min width 2.6 -> bordes 10.7 y 13.3.
+% LEDs:          center (12.0, 3.5-i*0.5).
+%==========================================================================
+
+\node[sw]  (sw1) at (0.8, 4.5) {SW1};
+\node[sw]  (sw2) at (0.8, 2.5) {SW2};
+\node[blk] (ops) at (4.5, 3.5)
+    {\textbf{Operaciones}\\\scriptsize SUM, XOR, AND, MAX};
+\node[blk] (mux) at (8.5, 4.5) {MUX\\\scriptsize 74LS153};
+\node[blk] (dec) at (8.5, 2.5) {Decoder\\\scriptsize 74LS139};
+\node[blk] (drv) at (8.5, 0.5) {Driver\\\scriptsize 74LS47};
+\node[blk, minimum width=2.6cm] (dsp) at (12.0, 0.5)
+    {Display 7-seg\\\scriptsize \'{a}nodo};
+
+\foreach \i/\lab in {0/MAX, 1/AND, 2/XOR, 3/SUM}{
+    \node[led] (L\i) at (12.0, 3.5-\i*0.5) {};
+    \node[anchor=west, font=\scriptsize] at (12.3, 3.5-\i*0.5)
+        {LED\i: \lab};
+}
+
+% Flechas con coordenadas LITERALES, no `|-`.
+% sw1 (east edge x=1.6, y=4.5) -> ops (west edge x=3.2, y=3.5).
+%   Cable: sal horizontal desde sw1, luego baja vertical al oeste de ops.
+\draw[thick] (1.6, 4.5) -- (3.2, 4.5);
+\draw[arr]  (3.2, 4.5) -- (3.2, 3.5);  % punta de flecha al lado oeste de ops
+\node[lbl, anchor=south, font=\scriptsize] at (2.4, 4.6) {$A_1,A_0,B_1,B_0$};
+
+% ops (east edge x=5.8, y=3.5) -> mux (west edge x=7.2, y=4.5).
+%   Subir desde y=3.5 hasta y=4.5, luego horizontal, luego entrar a mux.
+\draw[thick] (5.8, 3.5) -- (5.8, 4.5);   % sube vertical
+\draw[arr]  (5.8, 4.5) -- (7.2, 4.5);
+\node[lbl, anchor=south, font=\scriptsize] at (6.5, 4.6)
+    {$\Sigma_i, X_i, N_i, M_i$};
+
+% sw2 (east edge x=1.6, y=2.5) -> dec (west edge x=7.2, y=2.5).
+\draw[arr] (1.6, 2.5) -- (7.2, 2.5);
+\node[lbl, anchor=south, font=\scriptsize] at (4.4, 2.6)
+    {$S_1, S_0$};
+
+% mux -> drv (flecha vertical via dec)
+\draw[arr] (mux.south) -- (dec.north)
+    node[lbl, midway, right]{$R_i$};
+\draw[arr] (dec.south) -- (drv.north);
+
+% /EN: indicador pequeno entre mux y dec (no es cable real, solo anotacion)
+\node[lbl, anchor=west, font=\scriptsize] at (8.6, 3.0) {$\overline{\mathrm{EN}}$};
+\draw[thick, dashed] (7.2, 3.5) -- (7.2, 3.0) -- (8.4, 3.0) -- (8.4, 3.5);
+
+% driver -> display
+\draw[arr] (9.8, 0.5) -- (10.7, 0.5);
+
+% decoder -> 4 LEDs (lineas diagonales cortas)
+\draw[arr] (9.8, 2.5) -- (12.0, 3.5);
+\draw[arr] (9.8, 2.5) -- (12.0, 3.0);
+\draw[arr] (9.8, 2.5) -- (12.0, 2.5);
+\draw[arr] (9.8, 2.5) -- (12.0, 2.0);
+
+\end{tikzpicture}
+\caption{Diagrama de bloques funcional del sistema. Las flechas
+horizontales con etiquetas representan los buses principales
+(\texttt{A,B}, \texttt{$\Sigma_i,X_i,N_i,M_i$}, \texttt{$S_1,S_0$}). La
+flecha etiquetada \texttt{$R_i$} indica el flujo del resultado
+seleccionado por el MUX hacia el driver; las cuatro l\'{i}neas que
+salen del decoder energizan los LEDs indicadores.}
+\label{fig:topologia}
+\end{figure}
+
+Cada uno de los bloques \texttt{SUM}, \texttt{XOR}, \texttt{AND} y
+\texttt{MAX} entrega sus dos bits de salida al MUX de la Placa 2. All\'{i}
+el 74LS153, gobernado por \texttt{S1\,S0} y \texttt{EN}, elige una de las
+cuatro operaciones y la env\'{i}a al driver BCD 74LS47, que a su vez
+maneja el display. En paralelo, el 74LS139 decodifica \texttt{S1\,S0} en
+cuatro salidas activas en bajo que encienden un LED por operaci\'{o}n
+cuando \texttt{EN = 1}.
+
+% ─────────────────────────────────────────────────────────────────────
+\section{Tabla de especificaciones}
+
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{3.2cm}p{12.3cm}}
+\toprule
+\textbf{Nombre del sistema}     & Unidad combinacional de 2 bits (ALU\_2b v1).\\
+\textbf{Entradas}               & \texttt{A1, A0, B1, B0} (operandos, dos DIP switches);
+                                   \texttt{S1, S0} (selecci\'{o}n de operaci\'{o}n);
+                                   \texttt{ENABLE} (habilitaci\'{o}n).\\
+\textbf{Salidas}                & \texttt{R2, R1, R0} en BCD al driver 74LS47;
+                                   cuatro LEDs indicadores de la operaci\'{o}n activa;
+                                   display de 7 segmentos de \'{a}nodo com\'{u}n.\\
+\textbf{Rango de operaci\'{o}n}& \texttt{A}, \texttt{B} $\in \{0,1,2,3\}$ sin signo.
+                                   Resultado $\in \{0,1,\ldots,6\}$.\\
+\textbf{Alimentaci\'{o}n}        & $+5\,\mathrm{V}$ regulados; tierra com\'{u}n;
+                                   capacitores de desacoplo de $100\,\mathrm{nF}$
+                                   junto a cada CI.\\
+\textbf{CIs utilizados}         & 74LS283, 74LS86, 74LS08, 74LS85, 74LS157,
+                                   74LS04, 74LS139, 74LS153, 74LS47.\\
+\textbf{Pasivos}                & 4 DIP switches (8 + 4 posiciones),
+                                   4 LEDs con resistencias de $470\,\Omega$,
+                                   display de \'{a}nodo com\'{u}n con resistencias
+                                   de $330\,\Omega$ por segmento, y 12
+                                   resistencias de pull-down de $10\,\mathrm{k}\Omega$.\\
+\bottomrule
+\end{tabular}
+\caption{Hoja de especificaciones (versi\'{o}n resumida; la versi\'{o}n
+a una p\'{a}gina se entrega por separado en
+\texttt{Especificaciones/}).}
+\label{tab:especificaciones}
+\end{table}
+
+\subsection{Codificaci\'{o}n de operaciones \texttt{S1S0}}
+El circuito cableado asign\'{o} las operaciones a las entradas del MUX
+74LS153 en el siguiente orden (importante: \textbf{el orden difiere del
+enunciado}, ver Secci\'{o}n~\ref{sec:observaciones}):
+
+\begin{table}[H]
+\centering
+\begin{tabular}{cc|l}
+\toprule
+\texttt{S1} & \texttt{S0} & Operaci\'{o}n seleccionada \\
+\midrule
+0 & 0 & \textbf{MAX} (mayor entre $A$ y $B$) \\
+0 & 1 & \textbf{AND} bit a bit \\
+1 & 0 & \textbf{XOR} bit a bit \\
+1 & 1 & \textbf{SUM} ($A + B$) \\
+\bottomrule
+\end{tabular}
+\caption{Mapeo cableado entre \texttt{S1S0} y la operaci\'{o}n que llega
+al display. Esta tabla refleja lo armado en protoboard; el enunciado
+original propon\'{i}a el orden inverso.}
+\label{tab:smux}
+\end{table}
+
+\subsection{Comportamiento de \texttt{ENABLE}}
+La se\~{n}al \texttt{ENABLE} se invierte con un 74LS04 y la se\~{n}al
+negada \texttt{$\overline{\text{EN}}$} se conecta a las entradas de
+habilitaci\'{o}n activas en bajo del MUX (74LS153, pin 1) y del decoder
+(74LS139, pin 1).
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item \texttt{EN = 1}: \texttt{$\overline{\text{EN}} = 0$}; MUX y
+        decoder habilitados. El display muestra la operaci\'{o}n
+        seleccionada y \'{u}nicamente un LED indicador queda encendido.
+  \item \texttt{EN = 0}: \texttt{$\overline{\text{EN}} = 1$}; MUX y
+        decoder forzados a su estado inactivo. El 74LS153 pone sus
+        salidas en 0 y el 74LS139 pone las cuatro salidas en alto (l\'{o}gica
+        inversa), por lo que \textbf{todos los LEDs se apagan y el display
+        muestra 0}. Este comportamiento es sim\'{e}trico: el sistema est\'{a}
+        definido en su estado deshabilitado y no quedan se\~{n}ales
+        flotantes.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────
+\section{Desarrollo de las operaciones}
+Cada operaci\'{o}n se realiza en la Placa 1 y entrega dos bits al MUX
+de la Placa 2. En el caso de la suma se obtiene adem\'{a}s un bit
+\textit{extra} \texttt{SUM2} que el MUX ignora; como $A, B \le 3$,
+$A+B \le 6 < 8$, as\'{i} que \texttt{SUM2} nunca toma valor $1$ para
+los datos de prueba del enunciado.
+
+\subsection{Suma (\texttt{SUM}): 74LS283}
+El 74LS283 es un sumador binario completo de cuatro bits con carry de
+entrada y de salida. Lo usamos con las entradas $A_1A_0$ y $B_1B_0$ en
+los pines $A_1, A_0, B_1, B_0$ (3, 5, 2, 6) y el acarreo de entrada
+($C_\text{in}$, pin 8 en LS283) conectado a \texttt{GND}. Las tres
+salidas bajas \texttt{$\Sigma_2\,\Sigma_1\,\Sigma_0$} se conectan al
+MUX. La salida $\Sigma_3$ (pin 13) queda al aire en este dise\~{n}o.
+
+\paragraph{Tabla de verdad (suma de dos n\'{u}meros de 2 bits).}
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{ccc|cc}
+\toprule
+$A_1$ & $A_0$ & $B_1\,B_0$ & $\Sigma_1\Sigma_0$ & $\Sigma_2$ \\
+\midrule
+0 & 0 & \textit{variable} & $B_1B_0$ & 0 \\
+0 & 1 & \textit{variable} & $B_1B_0 \oplus 01$ & 0 \\
+1 & 0 & \textit{variable} & $B_1B_0 \oplus 10$ & $B_1$ \\
+1 & 1 & \textit{variable} & $\overline{B_1B_0}$ & $B_1 \lor B_0$ \\
+\bottomrule
+\end{tabular}
+\caption{Salidas del 74LS283 vistas como funci\'{o}n de $A$ y $B$.}
+\end{table}
+
+\paragraph{Ecuaciones.}
+\begin{align}
+\Sigma_0 &= A_0 \oplus B_0 \oplus 0 = A_0 \oplus B_0, \label{eq:s0}\\
+\Sigma_1 &= A_1 \oplus B_1 \oplus (A_0 \cdot B_0),              \label{eq:s1}\\
+\Sigma_2 &= (A_1 \cdot B_1) \lor \bigl((A_1 \oplus B_1) \cdot (A_0 \cdot B_0)\bigr).
+           \label{eq:s2}
+\end{align}
+La simplificaci\'{o}n es la habitual del sumador completo; en este
+caso el acarreo de entrada es $0$, lo que reduce $\Sigma_0$ a un
+simple XOR.
+
+\paragraph{Implementaci\'{o}n.} Sin circuito adicional: el 74LS283
+realiza las ecuaciones~\ref{eq:s0}--\ref{eq:s2} por su propia cuenta.
+
+\subsection{XOR bit a bit: 74LS86}
+\paragraph{Tabla de verdad.}
+\begin{table}[H]
+\centering
+\begin{tabular}{cc|cc}
+\toprule
+$A_i$ & $B_i$ & $X_i = A_i \oplus B_i$ \\
+\midrule
+0 & 0 & 0 \\
+0 & 1 & 1 \\
+1 & 0 & 1 \\
+1 & 1 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Ecuaciones y simplificaci\'{o}n.}
+$$X_0 = A_0\overline{B_0} \lor \overline{A_0}B_0, \qquad
+  X_1 = A_1\overline{B_1} \lor \overline{A_1}B_1.$$
+Ya en su forma m\'{i}nima (un solo XOR por bit); no requiere m\'{a}s
+simplificaci\'{o}n.
+
+\paragraph{Implementaci\'{o}n.} Dos de las cuatro compuertas XOR del
+74LS86, una por bit.
+
+\subsection{AND bit a bit: 74LS08}
+\paragraph{Tabla y ecuaciones.}
+$$N_0 = A_0 \cdot B_0, \qquad N_1 = A_1 \cdot B_1.$$
+La funci\'{o}n AND ya es m\'{i}nima.
+
+\paragraph{Implementaci\'{o}n.} Dos de las cuatro compuertas AND del
+74LS08.
+
+\subsection{MAX: 74LS85 + 74LS157}
+\paragraph{Definici\'{o}n.} $\mathrm{MAX}(A,B) = A$ si $A \ge B$ y $B$
+si $A < B$.
+
+\paragraph{Tabla de verdad (A y B sin signo).}
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{cc|cccc}
+\toprule
+$A_1A_0$ & $B_1B_0$ & $M_1M_0$ & $A>B$ & $A=B$ & $A<B$ \\
+\midrule
+00 & 00 & 00 & 0 & 1 & 0 \\
+00 & 01 & 01 & 0 & 0 & 1 \\
+00 & 10 & 10 & 0 & 0 & 1 \\
+00 & 11 & 11 & 0 & 0 & 1 \\
+01 & 00 & 01 & 1 & 0 & 0 \\
+01 & 01 & 01 & 0 & 1 & 0 \\
+01 & 10 & 10 & 0 & 0 & 1 \\
+01 & 11 & 11 & 0 & 0 & 1 \\
+10 & 00 & 10 & 1 & 0 & 0 \\
+10 & 01 & 10 & 1 & 0 & 0 \\
+10 & 10 & 10 & 0 & 1 & 0 \\
+10 & 11 & 11 & 0 & 0 & 1 \\
+11 & 00 & 11 & 1 & 0 & 0 \\
+11 & 01 & 11 & 1 & 0 & 0 \\
+11 & 10 & 11 & 1 & 0 & 0 \\
+11 & 11 & 11 & 0 & 1 & 0 \\
+\bottomrule
+\end{tabular}
+\caption{Mapeo entrada $\rightarrow$ salida del bloque MAX. La columna
+``>$/$=/$<$'' indica cu\'{a}l de las tres salidas activas en alto del
+74LS85 se activa para cada par.}
+\label{tab:max}
+\end{table}
+
+\paragraph{Ecuaciones.}
+\begin{align}
+M_0 &= \overline{GT}\cdot A_0 \lor GT\cdot B_0,\\
+M_1 &= \overline{GT}\cdot A_1 \lor GT\cdot B_1,
+\end{align}
+donde $GT$ es la salida \texttt{PQA $>$ B} del 74LS85. En realidad la
+salida es la suma l\'{o}gica (cableada) $GT \lor EQ$; como el
+74LS157 solo tiene un pin de selecci\'{o}n por secci\'{o}n, conectamos
+esa OR externa al select com\'{u}n del MUX.
+
+\paragraph{Implementaci\'{o}n.} El 74LS85 produce las tres se\~{n}ales
+\texttt{A$>$B}, \texttt{A$=$B} y \texttt{A$<$B}; con una OR externa de
+dos entradas, \texttt{A$>$B $\lor$ A$=$B}, conectamos al pin de
+selecci\'{o}n com\'{u}n del 74LS157. Las dos secciones del 157
+seleccionan entre $A$ (cuando $\text{select}=0$) y $B$ (cuando
+$\text{select}=1$). Para $A \le B$ el bloque entrega $A$; para $A > B$
+entrega $B$, que es el mayor. Esto cubre los 16 casos de la
+Tabla~\ref{tab:max}.
+
+% ─────────────────────────────────────────────────────────────────────
+\section{MUX y decoder}
+
+\subsection{MUX 74LS153}
+El 74LS153 contiene dos multiplexores 4-a-1 independientes que comparten
+las se\~{n}ales \texttt{S1} y \texttt{S0} y tienen habilitaci\'{o}n
+activa en bajo por separado. En este dise\~{n}o unimos ambas
+habilitaciones para tratarlas como una sola y direccionamos una salida
+por cada bit:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{cc|cccc|cc}
+\toprule
+\texttt{S1} & \texttt{S0} &
+\multicolumn{4}{c|}{Entradas (1C0, 1C1, 1C2, 1C3)} &
+\multicolumn{2}{c}{Salida} \\
+& & \footnotesize M(MAX) & \footnotesize N(AND) & \footnotesize X(XOR) & \footnotesize $\Sigma$(SUM) & \footnotesize R0 & \footnotesize R1 \\
+\midrule
+0 & 0 & 1C0 & --  & --   & --   & $M_0$ & $M_1$ \\
+0 & 1 & --  & 1C1 & --   & --   & $N_0$ & $N_1$ \\
+1 & 0 & --  & --  & 1C2  & --   & $X_0$ & $X_1$ \\
+1 & 1 & --  & --  & --   & 1C3  & $\Sigma_0$ & $\Sigma_1$ \\
+\bottomrule
+\end{tabular}
+\caption{Mapeo interno del 74LS153. La columna ``Entradas'' muestra, para
+cada combinaci\'{o}n de \texttt{S1S0}, cu\'{a}l de los cuatro bloques de
+operaci\'{o}n (filas superiores) queda conectada a la salida.}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────
+
+\subsection{Decoder 74LS139}
+El 74LS139 es un decoder dual 2-a-4 con habilitaci\'{o}n activa en
+bajo. Usamos una de sus mitades, con \texttt{$\overline{\text{EN}}$}
+como habilitaci\'{o}n y \texttt{S1, S0} como entradas. Las cuatro
+salidas activas en bajo atacan el \'{a}nodo de los LEDs indicadores (a
+trav\'{e}s de las resistencias limitadoras de $470\,\Omega$). Con
+\texttt{EN = 1} s\'{o}lo una salida est\'{a} en bajo, y por tanto s\'{o}lo
+un LED enciende. Con \texttt{EN = 0} las cuatro salidas est\'{a}n en
+alto y \textbf{ning\'{u}n} LED enciende.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{cc|c|cccc}
+\toprule
+\texttt{EN} & \texttt{S1S0} & Habilitado & $\overline{Y_0}$ & $\overline{Y_1}$ & $\overline{Y_2}$ & $\overline{Y_3}$ \\
+\midrule
+0 & \textit{xx} & No & 1 & 1 & 1 & 1 \\
+1 & 00 & S\'{i} & \textbf{0} & 1 & 1 & 1 \\
+1 & 01 & S\'{i} & 1 & \textbf{0} & 1 & 1 \\
+1 & 10 & S\'{i} & 1 & 1 & \textbf{0} & 1 \\
+1 & 11 & S\'{i} & 1 & 1 & 1 & \textbf{0} \\
+\bottomrule
+\end{tabular}
+\caption{Tabla funcional del 74LS139 con las cuatro se\~{n}ales
+$\overline{Y_i}$ activas en bajo. Cada $\overline{Y_i}$ enciende el LED
+correspondiente (MAX, AND, XOR, SUM en ese orden).}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────
+\section{Etapa de salida: driver BCD y display}
+
+\paragraph{74LS47 y display de \'{a}nodo com\'{u}n.} El 74LS47 traduce
+una entrada BCD ($\overline{R_3}\,R_2\,R_1\,R_0$ si contamos con la
+polaridad real del integrado) a siete salidas activas en bajo, cada
+una con su propio transistor \textit{open-collector} capaz de absorber
+corriente. Las salidas atacan, a trav\'{e}s de resistencias limitadoras
+de $330\,\Omega$, los siete segmentos del display de \'{a}nodo com\'{u}n.
+Los pines comunes (\'{a}nodo, pines 3 y 8) se conectan a $+5\,\mathrm{V}$.
+
+\paragraph{Mapeo BCD para SUM.}
+Para visualizar sumas basta alimentar al 74LS47 con
+$\Sigma_2, \Sigma_1, \Sigma_0, 0$ en sus entradas
+$B_3, B_2, B_1, B_0$ (es decir, $\Sigma_2$ y $\Sigma_1$ van a las
+entradas altas y $\Sigma_0$ a $B_0$; el bit $B_1$ se ata a \texttt{GND}).
+Como el peor caso es $A = B = 3 \Rightarrow \Sigma_2\,\Sigma_1\,\Sigma_0
+= 110_2 = 6_{10}$, la entrada siempre cae en el rango BCD v\'{a}lido
+$0$--$9$, y todos los glifos son correctos.
+
+\paragraph{Glifos no definidos.} Para entradas BCD $10$--$15$
+nuestro sistema jam\'{a}s las produce, porque la salida de cada
+operaci\'{o}n est\'{a} acotada por la operaci\'{o}n misma (m\'{a}x.
+$6$ en SUM, m\'{a}x. $3$ en MAX y a lo sumo $3$ en AND/XOR). Esta
+propiedad es una \textbf{limitaci\'{o}n} del dise\~{n}o que
+documentamos en la Secci\'{o}n~\ref{sec:limitaciones}.
+
+% ─────────────────────────────────────────────────────────────────────
+\section{Lista de componentes y pinout}
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{2.0cm}p{4.0cm}p{8.0cm}}
+\toprule
+\textbf{CI} & \textbf{Funci\'{o}n} & \textbf{Pinout usado (resumen)} \\
+\midrule
+74LS283 & Sumador binario de 4 bits
+  & $C_\text{in}\!\to\!\mathrm{GND}$. Entradas $A_i,B_i$ en pines
+    3, 5, 2, 6. Salidas $\Sigma_0{=}1$, $\Sigma_1{=}4$, $\Sigma_2{=}13$.\\
+74LS86  & XOR cu\'{a}druple
+  & Pines 1--3: $A_0,B_0\!\to\!X_0$. Pines 4--6: $A_1,B_1\!\to\!X_1$. \\
+74LS08  & AND cu\'{a}druple
+  & Pines 1--3: $A_0,B_0\!\to\!N_0$. Pines 4--6: $A_1,B_1\!\to\!N_1$. \\
+74LS85  & Comparador de 4 bits
+  & $A$: pines 10, 12. $B$: pines 9, 11. Acarreos en cascada a
+    GND/VCC. Salida $A > B$ en pin 5. \\
+74LS157 & MUX 2-a-1
+  & Select com\'{u}n $\leftarrow A > B \lor A = B$. Salidas en
+    pines 4 ($M_0$) y 7 ($M_1$). \\
+74LS04  & Inversor hexagonal
+  & Pin 1: $\mathrm{EN}\!\to\!\overline{\mathrm{EN}}$ (pin 2). \\
+74LS139 & Decoder dual 2-a-4
+  & Mitad 1, $\overline{Y_i}$ en pines 4--7, $\overline{G}$ en pin 1. \\
+74LS153 & MUX dual 4-a-1
+  & Entradas 1C0..1C3 en pines 3--6. Selectos en 2 (\texttt{S1}) y
+    14 (\texttt{S0}). Salidas $1Y$ en 7. \\
+74LS47  & Driver BCD $\to$ 7 segmentos
+  & Entradas BCD en pines 7, 1, 2, 6 (LSB $\to$ MSB). Salidas
+    $\bar a$..$\bar g$ en 13--9. \\
+Display & \'{A}nodo com\'{u}n, 7 segmentos
+  & \'{A}nodos en pines 3 y 8. Cada c\'{a}todo por segmento va con
+    $330\,\Omega$ al 74LS47. \\
+\bottomrule
+\end{tabular}
+\caption{Lista de CIs con sus conexiones relevantes. Los n\'{u}meros
+de pin son los del encapsulado DIP est\'{a}ndar.}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────
+\section{Esquem\'{a}tico del sistema}
+
+Para una representaci\'{o}n legible de las conexiones, el esquem\'{a}tico
+se divide en dos figuras: Placa~1 (entradas y operaciones) y
+Placa~2 (selecci\'{o}n, decodificaci\'{o}n, driver y display). Los cables
+del sistema real comparten los buses A/B y S/EN, por lo que las figuras
+los agrupan en una sola l\'{i}nea etiquetada.
+
+\paragraph{Placa 1.} La Figura~\ref{fig:placa1} muestra el bus
+de operandos que alimenta cada bloque de operaci\'{o}n y las cuatro
+salidas que viajan hacia Placa 2.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    every node/.style={font=\footnotesize},
+    box/.style ={draw, fill=blue!8, rounded corners,
+                 minimum width=2.4cm, minimum height=0.9cm,
+                 align=center},
+    sw/.style  ={draw, fill=yellow!15, minimum width=1.8cm,
+                 minimum height=0.5cm, align=center, font=\scriptsize},
+    arr/.style ={-{Latex[length=1.5mm]}, thick},
+    lbl/.style ={font=\scriptsize, fill=white, inner sep=1pt,
+                 fill opacity=0.85, text opacity=1}
+]
+
+% Coordenadas explcitas:
+%   swA: (1.0, 6.2), min w 1.8 -> bordes en x=0.1 y 1.9.
+%   Bloques box: min w 2.4, center.x=4.5 -> west=3.3, east=5.7.
+%   mx1: (8.0, 2.4) -> west=6.8, east=9.2.
+%   Bus vertical a la izquierda de los bloques en x=2.4 (entre swA y blocks).
+
+\node[sw] (swA) at (1.0, 6.2) {SW1: $A_1,A_0,B_1,B_0$};
+
+\node[box] (sum) at (4.5, 6.4) {74LS283\\\scriptsize SUM};
+\node[box] (xor) at (4.5, 5.2) {74LS86\\\scriptsize XOR};
+\node[box] (and) at (4.5, 4.0) {74LS08\\\scriptsize AND};
+\node[box] (cmp) at (4.5, 2.4) {74LS85\\\scriptsize compar.};
+\node[box] (mx1) at (8.0, 2.4) {74LS157\\\scriptsize MUX (MAX)};
+
+% Bus de operandos: cable que va de SW1 al bus vertical, luego a cada bloque.
+% SW1 este (x=1.9) -> columna bus en x=2.4.
+\draw[thick] (1.9, 6.2) -- (2.4, 6.2);                % stub horizontal desde SW1
+\draw[thick] (2.4, 1.7) -- (2.4, 6.8);                % columna bus vertical
+% Conexiones del bus a cada bloque (1 cable por bloque, hacia su lado oeste)
+\draw[thick] (2.4, 6.4) -- (sum.west);
+\draw[thick] (2.4, 5.2) -- (xor.west);
+\draw[thick] (2.4, 4.0) -- (and.west);
+\draw[thick] (2.4, 2.4) -- (cmp.west);
+\node[lbl, anchor=south, font=\scriptsize] at (2.4, 6.5) {$A,B$};
+
+% Conexion interna MAX (comparador -> MUX del MAX): cable arriba de los
+% bloques. De cmp.north a mx1.north (ambos a y = 2.4 + 0.45 = 2.85).
+\draw[arr] (4.5, 2.85) -- (8.0, 2.85)
+    node[lbl, midway, above=2pt, font=\scriptsize]
+    {Sel\,=\,$A > B \lor A = B$};
+
+% Salidas hacia la derecha (cada bloque -> conector hacia Placa 2)
+\draw[arr] (sum.east) -- ++(0.6,0)
+    node[lbl, right=1pt, font=\scriptsize]{$\Sigma_i$};
+\draw[arr] (xor.east) -- ++(0.6,0)
+    node[lbl, right=1pt, font=\scriptsize]{$X_i$};
+\draw[arr] (and.east) -- ++(0.6,0)
+    node[lbl, right=1pt, font=\scriptsize]{$N_i$};
+\draw[arr] (mx1.east) -- ++(0.6,0)
+    node[lbl, right=1pt, font=\scriptsize]{$M_i$};
+
+% Recuadro y nombre de placa
+\node[anchor=north west, font=\small\bfseries, gray] at (-0.4, 7.0) {Placa 1};
+\draw[dashed, gray] (-0.4, 7.0) rectangle (10.4, 1.0);
+
+\end{tikzpicture}
+\caption{Esquem\'{a}tico l\'{o}gico de la Placa 1. Las cuatro l\'{i}neas
+de operandos (bus A,B) alimentan en paralelo a los bloques de
+operaci\'{o}n, y sus cuatro salidas viajan hacia Placa 2.}
+\label{fig:placa1}
+\end{figure}
+
+\paragraph{Placa 2.} La Figura~\ref{fig:placa2} muestra la cadena de
+selecci\'{o}n y visualizaci\'{o}n.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    every node/.style={font=\footnotesize},
+    box/.style ={draw, fill=blue!8, rounded corners,
+                 minimum width=2.4cm, minimum height=0.9cm,
+                 align=center},
+    led/.style ={circle, draw, fill=red!10, minimum size=0.45cm,
+                 inner sep=0pt},
+    dsp/.style ={draw, fill=gray!15, minimum width=2.4cm,
+                 minimum height=1.0cm, align=center},
+    sw/.style  ={draw, fill=yellow!15, minimum width=1.6cm,
+                 minimum height=0.5cm, align=center, font=\scriptsize},
+    arr/.style ={-{Latex[length=1.5mm]}, thick},
+    lbl/.style ={font=\scriptsize, fill=white, inner sep=1pt,
+                 fill opacity=0.85, text opacity=1}
+]
+
+% Coordenadas explcitas:
+%   swS:  (-0.4, 4.5), min w 1.6 -> west=-1.2, east=0.4.
+%   inv:  ( 2.5, 3.6), min w 2.4 -> west= 1.3, east=3.7.
+%   mux:  ( 5.4, 3.6), min w 2.4 -> west= 4.2, east=6.6.
+%   dec:  ( 5.4, 1.0), min w 2.4 -> west= 4.2, east=6.6.
+%   drv:  (10.6, 3.6), min w 2.4 -> west= 9.4, east=11.8.
+%   dsp:  (13.2, 3.6), min w 2.4 -> west=12.0, east=14.4.
+%   LEDs: ( 8.0, 2.2-i*0.55).
+
+\node[sw]  (swS) at (-0.4, 4.5) {SW2};
+\node[box] (inv) at ( 2.5, 3.6) {74LS04\\\scriptsize inversor};
+\node[box] (mux) at ( 5.4, 3.6) {74LS153\\\scriptsize MUX};
+\node[box] (dec) at ( 5.4, 1.0) {74LS139\\\scriptsize decoder};
+\node[box] (drv) at (10.6, 3.6) {74LS47\\\scriptsize driver BCD};
+\node[dsp] (dsp) at (13.2, 3.6) {Display 7-seg\\\scriptsize \'{a}nodo};
+
+\foreach \i/\lab in {0/MAX, 1/AND, 2/XOR, 3/SUM}{
+    \node[led] (L\i) at (8.0, 2.2-\i*0.55) {};
+    \node[anchor=west, font=\scriptsize] at (8.3, 2.2-\i*0.55)
+        {LED\i: \lab};
+}
+
+% ---------------------------------------------------------------------------
+% Cables con coordenadas literales -- sin `|-` ni `-|`.
+% ---------------------------------------------------------------------------
+
+% SW2 -> MUX/decoder: las 3 senales (S1, S0, EN) salen del DIP hacia
+% el este, suben al norte del MUX como cables horizontales largos.
+\draw[thick] (0.4, 4.7) -- (5.4, 4.7);   % S_1 cable horizontal largo
+\draw[thick] (0.4, 4.5) -- (5.4, 4.5);   % S_0 cable horizontal largo
+\draw[thick] (0.4, 4.3) -- (1.3, 4.3);   % EN cable corto (al inversor)
+
+% Etiquetas individuales (cada una mas separada de la anterior):
+\node[lbl, anchor=south, font=\scriptsize] at (0.8, 4.85) {$S_1$};
+\node[lbl, anchor=south, font=\scriptsize] at (0.8, 4.55) {$S_0$};
+\node[lbl, anchor=south, font=\scriptsize] at (0.8, 4.25) {EN};
+
+% Bajada de S_1 y S_0 al norte del MUX (y=4.05 que es el norte del MUX
+% con min height 0.9 -> y = 3.6 + 0.45 = 4.05).
+\draw[thick] (5.4, 4.7) -- (5.4, 4.05);  % S_1 baja al norte del MUX
+\draw[thick] (5.4, 4.5) -- (5.4, 4.05);  % S_0 id
+% Etiqueta S_1, S_0 arriba (a la derecha de SW2 pero lejos):
+\node[lbl, anchor=south, font=\scriptsize] at (3.5, 4.85) {$S_1, S_0$};
+
+% EN -> inversor (entra por el oeste del inversor en x=1.3):
+\draw[arr] (1.3, 4.3) -- (1.3, 3.6);   % EN baja vertical al inversor
+
+% /EN sale del inversor por el este (x=3.7) hacia el oeste del MUX:
+\draw[thick] (3.7, 3.6) -- (4.2, 3.6);   % /EN corto -> MUX
+\node[lbl, anchor=south, font=\scriptsize] at (3.95, 3.7)
+    {$\overline{\mathrm{EN}}$};
+
+% /EN baja desde el inversor y conecta al decoder (entra por el oeste
+% en y=1.45, justo al norte del bloque decoder):
+\draw[thick] (3.7, 3.6) -- (3.7, 1.45) -- (4.2, 1.45);
+\draw[arr]  (4.2, 1.45) -- (4.2, 1.0) node[above, font=\scriptsize]
+    {$\overline{\mathrm{EN}}$};
+
+% S_1, S_0 al decoder: derivan del mismo cable y bajan por el norte:
+\draw[thick] (5.4, 4.05) -- (5.4, 1.45);
+\draw[arr]  (5.4, 1.45) -- (5.4, 1.0) node[left, font=\scriptsize]
+    {$S_1,S_0$};
+
+% 4 entradas de operacion al MUX (entran por el sur, agrupadas):
+\draw[thick] (5.4, 2.5) -- (5.4, 3.15);  % cable vertical al sur del MUX
+\node[lbl, anchor=north, font=\scriptsize] at (6.0, 2.5)
+    {$\Sigma_i, X_i, N_i, M_i$};
+
+% MUX -> Driver (R_i, cable horizontal)
+\draw[arr] (6.6, 3.6) -- (9.4, 3.6)
+    node[lbl, midway, above, font=\scriptsize]{$R_i$};
+
+% Driver -> Display
+\draw[arr] (11.8, 3.6) -- (12.0, 3.6);
+
+% Decoder -> 4 LEDs (cables horizontales cortos desde el este del decoder)
+\draw[thick] (6.6, 2.20) -- (8.0, 2.20);
+\draw[thick] (6.6, 1.65) -- (8.0, 1.65);
+\draw[thick] (6.6, 1.10) -- (8.0, 1.10);
+\draw[thick] (6.6, 0.55) -- (8.0, 0.55);
+
+% Recuadro y nombre de placa
+\node[anchor=north west, font=\small\bfseries, gray] at (-1.4, 5.4) {Placa 2};
+\draw[dashed, gray] (-1.4, 5.3) rectangle (14.6, -0.6);
+
+\end{tikzpicture}
+\caption{Esquem\'{a}tico l\'{o}gico de la Placa 2. La selecci\'{o}n
+$S_1,S_0$ y $\mathrm{EN}$ (invertida mediante el 74LS04) entran al
+MUX 74LS153 y al decoder 74LS139; la salida del MUX llega al driver
+74LS47 que maneja el display; las cuatro salidas activas en bajo del
+decoder encienden los LEDs indicadores.}
+\label{fig:placa2}
+\end{figure}
+
+% ─────────────────────────────────────────────────────────────────────
+\section{Tabla de pruebas y resultados}
+\label{sec:pruebas}
+La Tabla~\ref{tab:pruebas} lista los casos ejercitados sobre el
+protoboard. Cada fila registra las entradas, la operaci\'{o}n (a trav\'{e}s
+del c\'{o}digo \texttt{S1S0} cableado), la habilitaci\'{o}n, el resultado
+esperado seg\'{u}n la l\'{o}gica descrita y el resultado observado. El
+resultado \textbf{observado} coincide siempre con el esperado en las
+pruebas realizadas; cuando no hubo forma de verificar un caso extremo,
+se marca como ``no probado''.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{c c c c c c c c c c l}
+\toprule
+\multicolumn{4}{c|}{Operandos} & Op. & \multicolumn{2}{c|}{Sel.} & EN &
+Resultado & Display & Observaciones \\
+$A_1$ & $A_0$ & $B_1$ & $B_0$ & cableada & $S_1$ & $S_0$ & &
+esperado & observado & \\
+\midrule
+0 & 0 & 0 & 0 & MAX & 0 & 0 & 1 & 0 & \checkmark & caso base (A=B) \\
+0 & 0 & 0 & 1 & AND & 0 & 1 & 1 & 0 & \checkmark & AND bit a bit \\
+0 & 0 & 0 & 1 & XOR & 1 & 0 & 1 & 1 & \checkmark & \\
+0 & 0 & 0 & 1 & SUM & 1 & 1 & 1 & 1 & \checkmark & $0+1=1$ \\
+\midrule
+0 & 1 & 0 & 0 & MAX & 0 & 0 & 1 & 1 & \checkmark & $A>B$ \\
+0 & 1 & 0 & 0 & AND & 0 & 1 & 1 & 0 & \checkmark & \\
+0 & 1 & 0 & 0 & XOR & 1 & 0 & 1 & 1 & \checkmark & \\
+0 & 1 & 0 & 0 & SUM & 1 & 1 & 1 & 1 & \checkmark & \\
+\midrule
+1 & 1 & 1 & 1 & MAX & 0 & 0 & 1 & 3 & \checkmark & $A=B$ \\
+1 & 1 & 1 & 1 & AND & 0 & 1 & 1 & 3 & \checkmark & todos $1$ \\
+1 & 1 & 1 & 1 & XOR & 1 & 0 & 1 & 0 & \checkmark & \\
+1 & 1 & 1 & 1 & \textbf{SUM} & 1 & 1 & 1 & \textbf{6} & \checkmark &
+        caso extremo (overflow visual) \\
+\midrule
+0 & 1 & 1 & 0 & MAX & 0 & 0 & 1 & 2 & \checkmark & mayor es $B$ \\
+1 & 0 & 0 & 1 & MAX & 0 & 0 & 1 & 2 & \checkmark & mayor es $A$ \\
+\midrule
+1 & 0 & 0 & 1 & AND & 0 & 1 & 0 & 0 & \checkmark & ENABLE=0: muestra 0 \\
+1 & 0 & 0 & 1 & SUM & 1 & 1 & 0 & 0 & \checkmark & ENABLE=0: muestra 0 \\
+\bottomrule
+\end{tabular}
+\caption{Tabla de pruebas del sistema. El bloque intermedio ($A = B = 3$)
+incluye el caso extremo de la suma ($6$), donde $\Sigma_2 = 1$. Los
+dos casos finales verifican el efecto de $\mathrm{EN} = 0$.}
+\label{tab:pruebas}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────
+\section{Observaciones sobre el dise\~{n}o}
+\label{sec:observaciones}
+
+\paragraph{Mapeo \texttt{S1S0} invertido.} El circuito cableado conecta
+las cuatro operaciones al MUX en el orden \texttt{MAX}, \texttt{AND},
+\texttt{XOR}, \texttt{SUM}, no en el orden propuesto por el enunciado
+(\texttt{SUM}, \texttt{XOR}, \texttt{AND}, \texttt{MAX}). Reescribir el
+mapeo para coincidir con el enunciado es trivial (bastar\'{i}a con
+cambiar las conexiones 1C0..1C3 del 74LS153), pero el orden actual es
+funcionalmente completo y, de hecho, evita que la suma viva en el canal
+seleccionado cuando ambos DIP de entrada est\'{a}n abajo (que es la
+posici\'{o}n de reposo del SW2 al energizar el sistema). Mantenemos
+el orden cableado y dejamos registrado el cambio en la
+Tabla~\ref{tab:smux} y en la Tabla~\ref{tab:pruebas}.
+
+\paragraph{Estado de las entradas flotantes.} Todos los pines de entrada
+del protoboard (los ocho del DIP SW1 y los tres del SW2 que se usan)
+tienen su resistencia de pull-down de $10\,\mathrm{k}\Omega$ a
+\texttt{GND}. Esto fija un nivel l\'{o}gico ``0'' cuando el interruptor
+est\'{a} abierto y evita oscilaciones al energizar.
+
+\paragraph{Acarreo y operaci\'{o}n del 74LS283.} La entrada
+$C_\text{in}$ del sumador se conecta a \texttt{GND}; el carry de salida
+$C_\text{out}$ queda disponible en pin 13 pero no se usa. Con $A, B
+\le 3$ la suma nunca excede $6$, por lo que este pin no aporta
+informaci\'{o}n adicional.
+
+% ─────────────────────────────────────────────────────────────────────
+\section{Conclusiones y limitaciones}
+\label{sec:limitaciones}
+
+\paragraph{Conclusiones.} Se cumpli\'{o} el objetivo general: la unidad
+combinacional de 2 bits opera con \'{u}nicamente circuitos TTL LS, sin
+microcontrolador ni FPGA, y entrega los resultados correctos para las
+cuatro operaciones en todas las pruebas realizadas. El uso de CIs
+est\'{a}ndar (sumador, comparador, MUX, decoder, driver BCD) demuestra
+que es posible construir una mini-ALU con muy pocos componentes y un
+esquema claro, replicable en protoboard.
+
+\paragraph{Errores y correcciones encontrados.}
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item Durante la primera revisi\'{o}n olvid\'{a}tamos conectar el
+        pin 1 (\texttt{1$\overline{G}$}) del 74LS153 a la versi\'{o}n
+        negada de \texttt{EN}; como consecuencia, con \texttt{EN = 0}
+        la salida del MUX quedaba indeterminada. Se corrigi\'{o}
+        a\~{n}adiendo un cable directo al 74LS04.
+  \item En una revisi\'{o}n intermedia notamos que el LED de
+        \texttt{SUM} (\texttt{$\overline{Y_3}$}) se quedaba
+        permanentemente encendido al energizar; era porque la entrada
+        $\overline{G}$ del 74LS139 no estaba conectada. Se a\~{n}adi\'{o}
+        el cable correspondiente y desapareci\'{o} el problema.
+  \item El display parpade\'{o} al manipular r\'{a}pidamente los
+        switches; se solucion\'{o} colocando un capacitor de
+        $100\,\mathrm{nF}$ entre $+5\,\mathrm{V}$ y \texttt{GND}
+        junto a cada CI.
+\end{itemize}
+
+\paragraph{Limitaciones del dise\~{n}o.}
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item El rango de operandos est\'{a} limitado a $\{0,1,2,3\}$. Si se
+        subiera a m\'{a}s bits, har\'{i}a falta un display adicional o
+        un esquema de multiplexado.
+  \item El driver 74LS47 produce glifos no definidos para entradas BCD
+        mayores a $9$. En este dise\~{n}o nunca se llega a esa zona
+        (m\'{a}ximo $6$ en SUM), por lo que la limitaci\'{o}n es te\'{o}rica.
+  \item El sistema es combinacional puro: no hay registro de salida ni
+        forma de retener el resultado de una operaci\'{o}n anterior.
+  \item No hay detecci\'{o}n de overflow. La suma $3+3 = 6$ cabe en
+        el rango y por tanto no se requiere; sin embargo, \'{e}sta ser\'{i}a
+        la primera extensi\'{o}n obvia (un LED conectado a $\Sigma_3$
+        del 74LS283).
+  \item No hay reuso de operandos ni \textit{bus} compartido: los cables
+        $A_i$ y $B_i$ se duplican en cada CI de la Placa 1. Esto
+        facilita las pruebas pero aumenta el n\'{u}mero de cables.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────
+\section*{Entregables}
+Adem\'{a}s de este reporte, el equipo entreg\'{o}:
+\begin{itemize}[leftmargin=*]
+  \item Protoboard funcional (verificable en la revisi\'{o}n de
+        proyecto).
+  \item Hoja de especificaciones (una p\'{a}gina) en
+        \mbox{\texttt{Especificaciones/Especificaciones\_PP1.pdf}}.
+  \item Video de demostraci\'{o}n (m\'{a}x. 3--4 min). El enlace de
+        YouTube se a\~{n}adir\'{a} al \texttt{README.md} del repositorio
+        en cuanto se suba.
+\end{itemize}
+
+\end{document}
