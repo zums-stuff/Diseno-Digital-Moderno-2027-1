@@ -58,29 +58,3 @@ Video en: `P05/Proyecto5.mp4` y `https://youtu.be/lRdOWMnBujU`
 
 Video en `P06/Video Proyecto 6.mp4`
 
-## Estructura
-
-```
-.
-├── .gitignore                               # Excluye artefactos de compilación
-├── T01/                                     # Tarea 1 — Sistemas numéricos
-│   ├── Tarea1_SistemasNumericos.py          # Copia del programa (idéntica a tarea1.py)
-│   ├── Tarea1_SistemasNumericos_Reporte.pdf # Reporte en PDF
-│   ├── Tarea 1 Video.mp4                    # Video explicativo
-│   └── Tarea1_LaTeX/                        # Fuentes LaTeX del reporte
-│       ├── main.tex
-│       ├── config.tex
-│       ├── tarea1.py                        # Programa principal (el que cita el reporte)
-│       └── img/
-│           └── ejecucion/                   # Capturas de las 12 pruebas del programa
-├── P02/                                     # Proyecto 2 — Tablas de verdad
-│   └── Video_Proyecto2.mp4                  # Entregable en video
-└── P03/                                     # Proyecto 3
-    ├── main.tex                             # Fuentes LaTeX del reporte
-    ├── Reporte_Proyecto3.pdf                # Reporte en PDF (entregable)
-    ├── config/
-    │   ├── config.tex                       # Preámbulo compartido
-    │   └── references.bib                   # Fuentes bibliográficas
-    ├── images/                              # Logos y figuras del reporte
-    └── build/                               # Artefactos de compilación, no se versionan
-```
