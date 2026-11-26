@@ -42,14 +42,21 @@ mediana escala de integración: un codificador con prioridad 74147, una etapa de
 inversión de sus salidas y un decodificador BCD a 7 segmentos (7447/7448) que
 muestra en el display el número del punto que detecta una intrusión.
 
-Las entradas se implementaron con módulos de pares infrarrojos, cuya respuesta
-resultó poco sensible frente a la distancia y a la iluminación del entorno. Por
-eso la verificación de la lógica combinacional se hizo excitando las entradas del
-codificador con un dipswitch, lo que permitió comprobar de forma aislada la cadena
-completa: codificación con prioridad, inversión y decodificado. El reporte
-documenta cinco combinaciones del dipswitch y el dígito resultante en el display.
-
 Reporte en PDF: `P03/Reporte_Proyecto3.pdf`
+
+## Proyecto 4 - Radiofrecuencia
+
+Implementación de un circuito emisor y un receptor con módulos de radiofrencuencia inalámbricos.
+
+Video en: `P04/Proyecto4.mp4` y `https://youtube.com/shorts/DfN_WP2ymc4?feature=share`
+
+## Proyecto 5 - Temporizadores y contadores binarios
+
+Video en: `P05/Proyecto5.mp4` y `https://youtu.be/lRdOWMnBujU`
+
+## Proyecto 6 - Registros de corrimiento
+
+Video en `P06/Video Proyecto 6.mp4`
 
 ## Estructura
 
