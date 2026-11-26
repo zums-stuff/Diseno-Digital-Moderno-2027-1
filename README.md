@@ -48,11 +48,11 @@ Reporte en PDF: `P03/Reporte_Proyecto3.pdf`
 
 Implementación de un circuito emisor y un receptor con módulos de radiofrencuencia inalámbricos.
 
-Video en: `P04/Proyecto4.mp4` y `https://youtube.com/shorts/DfN_WP2ymc4?feature=share`
+Video en: `P04/Proyecto4.mp4` y https://youtube.com/shorts/DfN_WP2ymc4?feature=share
 
 ## Proyecto 5 - Temporizadores y contadores binarios
 
-Video en: `P05/Proyecto5.mp4` y `https://youtu.be/lRdOWMnBujU`
+Video en: `P05/Proyecto5.mp4` y https://youtu.be/lRdOWMnBujU
 
 ## Proyecto 6 - Registros de corrimiento
 
